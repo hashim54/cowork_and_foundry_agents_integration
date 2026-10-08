@@ -1,0 +1,49 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.29/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.29",
+    "version": "1.0.0",
+    "id": "",
+    "developer": {
+        "name": "",
+        "websiteUrl": "",
+        "privacyUrl": "",
+        "termsOfUseUrl": ""
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "",
+        "full": ""
+    },
+    "description": {
+        "short": "List and invoke agents in a configured Foundry project.",
+        "full": "Connects Copilot Cowork to the Foundry MCP Server using the signed-in user's delegated identity to list and invoke agents in the configured project."
+    },
+    "accentColor": "#FFFFFF",
+    "agentSkills": [
+        {
+            "folder": "./skills/foundry-agent-router"
+        }
+    ],
+    "agentConnectors": [
+        {
+            "id": "foundry-agents",
+            "displayName": "",
+            "description": "List and invoke agents in the configured Foundry project.",
+            "toolSource": {
+                "remoteMcpServer": {
+                    "mcpServerUrl": "https://mcp.ai.azure.com",
+                    "mcpToolDescription": {
+                        "file": "foundry-agent-tools.json"
+                    },
+                    "authorization": {
+                        "type": "OAuthPluginVault",
+                        "referenceId": ""
+                    }
+                }
+            }
+        }
+    ]
+}

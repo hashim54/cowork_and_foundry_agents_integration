@@ -1,0 +1,79 @@
+{
+    "tools": [
+        {
+            "name": "agent_get",
+            "description": "List agents in the configured Foundry project or retrieve one by name.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "projectEndpoint": {
+                        "description": "The fixed Foundry project endpoint.",
+                        "type": "string",
+                        "format": "uri",
+                        "enum": [
+                            ""
+                        ]
+                    },
+                    "agentName": {
+                        "description": "Agent name. Omit to list agents.",
+                        "type": "string"
+                    }
+                },
+                "required": ["projectEndpoint"]
+            }
+        },
+        {
+            "name": "agent_invoke",
+            "description": "Send a message to an agent in the configured Foundry project.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "projectEndpoint": {
+                        "description": "The fixed Foundry project endpoint.",
+                        "type": "string",
+                        "format": "uri",
+                        "enum": [
+                            ""
+                        ]
+                    },
+                    "agentName": {
+                        "description": "Name of the agent to invoke.",
+                        "type": "string"
+                    },
+                    "inputText": {
+                        "description": "Message text to send to the agent.",
+                        "type": "string"
+                    },
+                    "protocol": {
+                        "description": "Optional protocol. Omit for server auto-detection.",
+                        "type": "string",
+                        "enum": ["responses", "invocations"]
+                    },
+                    "agentVersion": {
+                        "description": "Optional agent version. Omit to use the latest.",
+                        "type": "string"
+                    },
+                    "conversationId": {
+                        "description": "Optional conversation ID for a multi-turn prompt agent conversation.",
+                        "type": "string"
+                    },
+                    "sessionId": {
+                        "description": "Optional session ID for a hosted agent session.",
+                        "type": "string"
+                    },
+                    "stream": {
+                        "description": "Whether to stream the response.",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "useEndpoint": {
+                        "description": "Use endpoint-scoped routes for hosted agents.",
+                        "type": "boolean",
+                        "default": true
+                    }
+                },
+                "required": ["projectEndpoint", "agentName", "inputText"]
+            }
+        }
+    ]
+}

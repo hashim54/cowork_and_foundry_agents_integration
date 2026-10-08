@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://aka.ms/m365-agents-toolkits/v1.13/yaml.schema.json
+version: v1.13
+environmentFolderPath: ./env
+
+provision:
+  - uses: teamsApp/create
+    with:
+      name: ${{APP_DISPLAY_NAME}}
+    writeToEnvironmentFile:
+      teamsAppId: TEAMS_APP_ID
+  - uses: oauth/register
+    with:
+      name: ${{APP_DISPLAY_NAME}}
+      appId: ${{TEAMS_APP_ID}}
+      flow: authorizationCode
+      identityProvider: Custom
+      baseUrl: https://mcp.ai.azure.com
+      clientId: ${{FOUNDRY_OAUTH_CLIENT_ID}}
+      clientSecret: ${{SECRET_FOUNDRY_OAUTH_CLIENT_SECRET}}
+      authorizationUrl: https://login.microsoftonline.com/${{TEAMS_APP_TENANT_ID}}/oauth2/v2.0/authorize
+      tokenUrl: https://login.microsoftonline.com/${{TEAMS_APP_TENANT_ID}}/oauth2/v2.0/token
+      refreshUrl: https://login.microsoftonline.com/${{TEAMS_APP_TENANT_ID}}/oauth2/v2.0/token
+      scope: https://mcp.ai.azure.com/Foundry.Mcp.Tools offline_access
+      applicableToApps: AnyApp
+      targetAudience: HomeTenant
+      isPKCEEnabled: true
+      tokenExchangeMethodType: PostRequestBody
+    writeToEnvironmentFile:
+      configurationId: FOUNDRY_OAUTH_REFERENCE_ID

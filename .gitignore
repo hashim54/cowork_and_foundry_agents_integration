@@ -1,0 +1,18 @@
+# Local configuration and credentials
+.env*
+!.env.example
+env/*
+!env/.env.example
+.local/
+.localConfigs
+.deployment/
+
+# Generated packages and toolkit artifacts
+build/
+dist/
+*.zip
+*.log
+node_modules/
+.vscode/
+.DS_Store
+Thumbs.db
