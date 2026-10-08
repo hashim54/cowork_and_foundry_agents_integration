@@ -4,6 +4,99 @@ A reusable, same-tenant Cowork plugin sample for listing and invoking Microsoft
 Foundry agents through Microsoft's hosted MCP server. No custom proxy or hosted
 application code is required for this connection.
 
+**Bring your Foundry agents into the Cowork task experience:** discover the
+agents in your configured project, choose one for a task, and receive its
+response without leaving Cowork.
+
+## Contents
+
+- [End-to-end experience](#end-to-end-experience)
+- [Visual walkthrough](#visual-walkthrough)
+- [Architecture and access boundaries](#architecture-and-access-boundaries)
+- [Prerequisites](#prerequisites)
+- [Same-tenant setup](#same-tenant-setup)
+- [Testing conversation and tools](#testing-conversation-and-tools)
+- [Troubleshooting](#troubleshooting)
+- [Operations and public sharing](#operations-and-public-sharing)
+- [Files and references](#files-and-references)
+
+## End-to-end experience
+
+Cowork provides the conversational entry point; your Foundry agent performs the
+requested task. The plugin and routing skill connect the two.
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Cowork as Copilot Cowork
+    participant MCP as Foundry MCP server
+    participant Agent as Your Foundry agent
+
+    Note over User,MCP: Connect the plugin using same-tenant delegated OAuth
+    User->>Cowork: Which Foundry agents are available?
+    Note over Cowork: Apply the packaged routing skill
+    Cowork->>MCP: agent_get(configured project)
+    MCP-->>Cowork: Available agents
+    Cowork-->>User: Show agents to choose from
+    User->>Cowork: Ask the selected agent to perform a task
+    Cowork->>MCP: agent_invoke(agent name, input text)
+    MCP->>Agent: Invoke under the caller's Foundry access
+    Agent-->>MCP: Agent response
+    MCP-->>Cowork: Invocation result
+    Cowork-->>User: Present the result and identify the agent
+```
+
+1. **Connect once:** enable your uploaded plugin and sign in with an account in
+   the same tenant as the Foundry project. Reauthentication may be required by
+   policy or token expiry.
+2. **Discover:** ask Cowork to list the agents in your configured project.
+3. **Delegate a task:** select a returned agent and describe what it should do.
+   The routing skill guides Cowork to invoke it through the connector.
+4. **Receive the result:** Cowork presents the Foundry agent's response in the
+   task, rather than requiring you to switch to the Foundry portal.
+5. **Continue deliberately:** request a follow-up or revision. The skill guides
+   reuse of supported conversation identifiers or a context-summary fallback;
+   validate the actual behavior for your agent before relying on persistence.
+
+Same-tenant sign-in, agent discovery, and invocation succeeded in the original
+demonstration. Agents may also use their own configured tools, but downstream
+tool execution, multi-turn persistence, and audio require
+[separate validation](#testing-conversation-and-tools).
+
+## Visual walkthrough
+
+These original screenshots show a demonstration environment and are included
+with the owner's approval. The displayed tenant, plugin, project, agent names,
+and unrelated UI content are **illustrative, not configuration values**. Your
+available agents and UI may differ. Screenshots are not evidence that every
+listed agent or advanced capability was tested.
+
+### Enable the plugin
+
+Under **Customize > Plugins**, confirm the uploaded Foundry plugin is enabled.
+Other visible plugins are not prerequisites.
+
+![Cowork plugin enabled](./docs/images/cowork-plugin-enabled.png)
+
+### Check the routing skill
+
+Locate the packaged `foundry-agent-router` skill. Its presence alone does not
+verify authentication or conversation-state reuse.
+
+![Packaged routing skill in Cowork](./docs/images/cowork-routing-skill.png)
+
+### List agents through the connector
+
+The example shows skill selection, an **Agent get** call, and the returned list.
+Choose a returned agent for the next invocation; this screenshot illustrates
+discovery, not the invocation result.
+
+![Agent discovery through the Foundry connector](./docs/images/cowork-agent-listing.png)
+
+The sections below explain how to reproduce this experience in your own tenant.
+
+## Architecture and access boundaries
+
 **Bring your own tenant, registrations, project, and publisher metadata.** This
 repository contains templates, not a preauthorized plugin. A generated ZIP is
 bound to your environment and should not be published as a generic release.
@@ -11,19 +104,6 @@ bound to your environment and should not be published as a generic release.
 The folder can be renamed or cloned as its own repository; its original folder
 name is not a configuration dependency. This is a community sample, not an
 official Microsoft product or a guarantee of availability in every tenant.
-
-## Contents
-
-- [Architecture and access boundaries](#architecture-and-access-boundaries)
-- [Prerequisites](#prerequisites)
-- [Same-tenant setup](#same-tenant-setup)
-- [Visual walkthrough](#visual-walkthrough)
-- [Testing conversation and tools](#testing-conversation-and-tools)
-- [Troubleshooting](#troubleshooting)
-- [Operations and public sharing](#operations-and-public-sharing)
-- [Files and references](#files-and-references)
-
-## Architecture and access boundaries
 
 ```text
 Cowork user
@@ -322,34 +402,6 @@ Send these prompts separately:
 
 Repeat with a restricted test user. Unauthorized operations should fail rather
 than falling back to an administrator or another identity.
-
-## Visual walkthrough
-
-These original screenshots show a demonstration environment and are included
-with the owner's approval. The displayed tenant, plugin, project, agent names,
-and unrelated UI content are **illustrative, not configuration values**. Your
-available agents and UI may differ. Screenshots are not evidence that every
-listed agent or advanced capability was tested.
-
-### Enable the plugin
-
-Under **Customize > Plugins**, confirm the uploaded Foundry plugin is enabled.
-Other visible plugins are not prerequisites.
-
-![Cowork plugin enabled](./docs/images/cowork-plugin-enabled.png)
-
-### Check the routing skill
-
-Locate the packaged `foundry-agent-router` skill. Its presence alone does not
-verify authentication or conversation-state reuse.
-
-![Packaged routing skill in Cowork](./docs/images/cowork-routing-skill.png)
-
-### List agents through the connector
-
-The example shows skill selection, an **Agent get** call, and the returned list.
-
-![Agent discovery through the Foundry connector](./docs/images/cowork-agent-listing.png)
 
 ## Testing conversation and tools
 
